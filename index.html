@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NeuroLab · Potenziale d’azione</title><style>
+:root{color-scheme:dark;--bg:#080f1c;--panel:#101c2e;--border:#24344c;--muted:#9aadc5;--na:#43ceff;--k:#b49aff;--ca:#69e3ad;--gold:#ffd282}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#e8f0ff;font:14px system-ui,sans-serif}main{max-width:1560px;margin:auto;padding:22px 30px}header{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:20px}.brand{font-size:25px;font-weight:750;letter-spacing:-1px}.brand span{color:var(--na)}h1{font-size:14px;font-weight:400;color:var(--muted);margin:5px 0}button{font:inherit;cursor:pointer;border:1px solid #354761;color:#dce9ff;border-radius:8px;background:#19283e;padding:10px 16px}button:hover{background:#263e5c}button:disabled{opacity:.4;cursor:default}button.active{background:#1b4259;color:var(--na);border-color:#43ceff}button.primary{background:var(--na);border:0;color:#072035;font-weight:750}button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:4px}.tabs{display:flex;gap:8px}.panel{min-width:0;background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden}.heading{padding:15px 19px 0;display:flex;justify-content:space-between;align-items:center;gap:8px}.heading h2{font-size:14px;margin:0}.tag{font-size:11px;color:var(--muted);letter-spacing:1px}.grid{display:grid;grid-template-columns:1.15fr 1fr;gap:14px}.chart-panel{grid-column:1/-1}.chart-panel svg{height:240px}svg{width:100%;display:block}svg text{font-family:system-ui,sans-serif}#membrane,#circuit{height:285px}.legend{display:flex;gap:16px;font-size:12px;color:var(--muted)}.na{color:var(--na)}.k{color:var(--k)}.ca{color:var(--ca)}.timebar{padding:0 20px 14px;display:flex;align-items:center;gap:15px}input[type=range]{accent-color:var(--na);cursor:pointer;min-width:0}.timebar input{flex:1}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}.stat{min-width:0;padding:11px 18px;background:#101c2e;border:1px solid var(--border);border-radius:8px}.stat label{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}.stat strong{font-size:21px;font-variant-numeric:tabular-nums}.stat small{color:var(--muted);font-size:12px}.controls{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:14px 0}.speed{margin-left:auto;display:flex;align-items:center;gap:10px}.speed input{width:120px}#experiment{padding:17px;margin-bottom:14px}#experiment[hidden]{display:none}.params{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-bottom:16px}.params label{display:flex;flex-direction:column;gap:9px;color:var(--muted)}output{color:white;font-variant-numeric:tabular-nums}.note{padding:0 18px 13px;font-size:11px;line-height:1.5;color:var(--muted);margin:0}footer{margin-top:14px;color:var(--muted);font-size:12px}summary{cursor:pointer}details p{line-height:1.65;max-width:1000px}#status{color:var(--muted);font-size:12px}.compare-row{display:flex;gap:20px;align-items:center}@media(min-width:1400px) and (min-height:850px){.chart-panel svg{height:230px}#membrane,#circuit{height:260px}}@media(max-width:800px){main{padding:16px}.grid{grid-template-columns:1fr}.chart-panel{grid-column:auto}header{align-items:flex-start;flex-direction:column}.stats{gap:6px;grid-template-columns:repeat(2,minmax(0,1fr))}.stat{padding:10px}.stat strong{font-size:17px}.params{grid-template-columns:1fr 1fr}.speed{margin-left:0}.legend{gap:8px}.tag{display:none}#membrane,#circuit{height:auto}}
+</style></head><body><main>
+<header><div><div class="brand">Neuro<span>Lab</span> <span style="font-size:12px;letter-spacing:2px;margin-left:15px">SIMULATORE</span></div><h1>Il potenziale d’azione · tre prospettive, un solo fenomeno</h1></div><nav class="tabs" aria-label="Modalità"><button id="observe" class="active" aria-pressed="true">Osservazione</button><button id="experimentTab" aria-pressed="false">Esperimento</button></nav></header>
+<section id="experiment" class="panel" hidden><div class="params">
+<label>Conduttanza massima Na⁺ <output id="naOut"></output><input id="na" aria-label="Conduttanza massima sodio" type="range" min="0" max="200" step="5" value="120"></label>
+<label>Conduttanza massima K⁺ <output id="kOut"></output><input id="k" aria-label="Conduttanza massima potassio" type="range" min="0" max="80" step="2" value="36"></label>
+<label>Intensità dello stimolo <output id="ampOut"></output><input id="amp" aria-label="Intensità dello stimolo" type="range" min="0" max="50" step="1" value="20"></label>
+<label>Durata dello stimolo <output id="durationOut"></output><input id="duration" aria-label="Durata dello stimolo" type="range" min="0.1" max="3" step="0.1" value="0.5"></label>
+</div><p class="note">Modificare i parametri avvia una nuova registrazione. Il riferimento riceve gli stessi comandi di stimolo, con parametri normali.</p><div class="compare-row"><label><input id="compare" type="checkbox" checked> Confronta con l’impulso normale</label><button id="defaults">Ripristina parametri</button></div></section>
+<div class="grid"><section class="panel chart-panel"><div class="heading"><h2>01 / Potenziale di membrana</h2><div class="legend"><span class="na">● Simulazione</span><span id="refLegend" hidden>┄ Riferimento</span><span id="stimulusInfo">Stimolo su comando</span></div></div><svg id="chart" viewBox="0 0 1100 240" role="img" aria-label="Grafico del potenziale di membrana nel tempo"></svg><div class="timebar"><span id="historyStart">0 ms</span><input id="timeline" aria-label="Tempo biologico" type="range" min="0" max="10" step="0.01" value="0"><span id="historyEnd">0 ms</span></div></section>
+<section class="panel"><div class="heading"><h2>02 / Membrana neuronale</h2><div class="legend"><span class="na">Na⁺</span><span class="k">K⁺</span><span class="ca">Ca²⁺</span></div></div><svg id="membrane" viewBox="0 0 620 285" role="img" aria-label="Membrana, canali ionici e pompa sodio-potassio"></svg><p class="note">Ca²⁺: terminale presinaptico separato. Pompa: 3 Na⁺ fuori / 2 K⁺ dentro, 1 ATP per ciclo; mantiene i gradienti.</p></section>
+<section class="panel"><div class="heading"><h2>03 / Circuito equivalente</h2><span class="tag">INTERNO − ESTERNO</span></div><svg id="circuit" viewBox="0 0 560 285" role="img" aria-label="Condensatore e rami ionici in parallelo"></svg><p class="note">Frecce: corrente convenzionale (positiva verso l’esterno). Capacità: 1 µF/cm². Perdita: 0,3 mS/cm².</p></section></div>
+<div class="stats"><div class="stat"><label>TEMPO BIOLOGICO</label><strong id="timeValue">0,00</strong> <small>ms</small></div><div class="stat"><label>POTENZIALE</label><strong id="voltageValue">−70,0</strong> <small>mV</small></div><div class="stat"><label>CONDUTTANZA Na⁺</label><strong class="na" id="gnaValue"></strong> <small>mS/cm²</small></div><div class="stat"><label>CONDUTTANZA K⁺</label><strong class="k" id="gkValue"></strong> <small>mS/cm²</small></div></div>
+<div class="controls"><button class="primary" id="generate">ϟ GENERA IMPULSO</button><button id="pause" disabled>Riprendi</button><button id="step" disabled>Avanza di 0,1 ms</button><button id="reset">Reset</button><label class="speed">Velocità <input id="speed" aria-label="Velocità di riproduzione" type="range" min="0" max="4" step="1" value="3"><output id="speedOut">1×</output></label></div><div id="status" role="status">Pronto · premi Genera impulso</div>
+<footer><details><summary>Modello e limiti della rappresentazione</summary><p>Modello Hodgkin–Huxley con cinetica accelerata di un fattore 2 rispetto ai parametri classici a 6,3 °C (equivalente a circa 12,6 °C con Q10 pari a 3), con scala di tensione traslata di −5 mV per un riposo vicino a −70 mV. Potenziali di equilibrio: Na⁺ +45 mV, K⁺ −82 mV, perdita −59,4 mV. Integrazione Runge–Kutta del quarto ordine a passi di 0,005 ms, indipendente dalla riproduzione. Cambiare i parametri avvia una nuova registrazione dal riposo iniziale: una variazione delle conduttanze può cambiare anche l’equilibrio della membrana. La soglia emerge dal modello e non è fissata a una tensione universale.</p><p>Le particelle sono simboliche: numero e velocità riflettono le correnti con una scala visiva compressa, senza rappresentare variazioni macroscopiche delle concentrazioni. L’apertura indica la frazione conduttiva della popolazione, non un singolo canale. Per leggibilità, i flussi basali sotto lo 0,2% di apertura per Na⁺/Ca²⁺ e il 2% per K⁺ non sono animati: le loro correnti restano incluse nel modello. Stato, varco e particelle usano la stessa soglia visiva. Il calcio usa un modello didattico separato, comandato dalla stessa tensione, senza contribuire al potenziale assonale. La pompa mostra cicli illustrativi rallentati, non una corrente inclusa nel modello rapido. Le cariche del condensatore rappresentano la separazione netta di carica. A 1×, 1 ms biologico dura 1 secondo. Nessuna animazione avanza durante la pausa. Il grafico mostra una finestra scorrevole di 10 ms; la barra temporale conserva gli ultimi 120 ms biologici. Inserire uno stimolo dopo un riavvolgimento sostituisce il seguito della registrazione dal punto scelto. In pausa lo stimolo resta in attesa di Riprendi o Avanza.</p><p>Riferimento scientifico: Hodgkin e Huxley, 1952, Journal of Physiology 117, 500–544. <a href="https://www.youtube.com/watch?v=LdumhvDBpzQ" target="_blank" rel="noopener" style="color:var(--na)">Video didattico indicato per il circuito</a>.</p></details></footer>
+</main><script>
+'use strict';
+const DEFAULTS={na:120,k:36,amp:20,duration:.5};
+const DT=.005, COUNT=2000, ENA=45, EK=-82, EL=-59.4;
+const $=id=>document.getElementById(id), fmt=(x,n=2)=>x.toLocaleString('it-IT',{minimumFractionDigits:n,maximumFractionDigits:n});
+const exprel=x=>Math.abs(x)<1e-7?1-x/2:x/Math.expm1(x);
+function rates(v){const u=v+5;return [.1*10*exprel(-(u+40)/10),4*Math.exp(-(u+65)/18),.07*Math.exp(-(u+65)/20),1/(1+Math.exp(-(u+35)/10)),.01*10*exprel(-(u+55)/10),.125*Math.exp(-(u+65)/80)];}
+function initial(){const r=rates(-70);return [-70,r[0]/(r[0]+r[1]),r[2]/(r[2]+r[3]),r[4]/(r[4]+r[5]),1/(1+Math.exp(90/7))];}
+function currents(y,p){const [v,m,h,n,c]=y,gna=p.na*m**3*h,gk=p.k*n**4;return {gna,gk,ina:gna*(v-ENA),ik:gk*(v-EK),il:.3*(v-EL),gca:.15*c*c,ica:.15*c*c*(v-120)};}
+function derivative(y,p,stim){const [v,m,h,n,c]=y,r=rates(v),a=currents(y,p);return [stim-a.ina-a.ik-a.il,2*(r[0]*(1-m)-r[1]*m),2*(r[2]*(1-h)-r[3]*h),2*(r[4]*(1-n)-r[5]*n),(1/(1+Math.exp(-(v+20)/7))-c)/.4];}
+// A single fixed-step integrator supplies every view and the comparison trace.
+function integrate(y,p,stim){
+ const k1=derivative(y,p,stim),k2=derivative(y.map((v,j)=>v+DT*k1[j]/2),p,stim),k3=derivative(y.map((v,j)=>v+DT*k2[j]/2),p,stim),k4=derivative(y.map((v,j)=>v+DT*k3[j]),p,stim);
+ const next=y.map((v,j)=>v+DT*(k1[j]+2*k2[j]+2*k3[j]+k4[j])/6);
+ if(!next.every(Number.isFinite))throw Error('Integrazione non finita');return next;
+}
+function channelVisual(g,max,threshold){const fraction=max>0?g/max:0;return {fraction,conducting:fraction>=threshold,opening:Math.min(1,Math.sqrt(fraction))};}
+function activity(s,p){return [channelVisual(s.gna,p.na,.002),channelVisual(s.gk,p.k,.02),channelVisual(s.gca,.15,.002)];}
+function makeSample(t,y,p,previous){
+ const a=currents(y,p),s={t,v:y[0],m:y[1],h:y[2],n:y[3],c:y[4],...a};
+ const currentsNow=[a.ina,a.ik,a.ica,a.il],vis=activity(s,p);
+ s.flows=currentsNow.map((v,j)=>previous?previous.flows[j]+DT*(v+[previous.ina,previous.ik,previous.ica,previous.il][j])/2:0);
+ s.motion=currentsNow.map((v,j)=>previous?previous.motion[j]+DT*(j===3||vis[j].conducting?Math.sign(v)*Math.log1p(Math.abs(v))*1.2:0):0);
+ return s;
+}
+function simulate(p){let y=initial(),out=[makeSample(0,y,p)];for(let i=0;i<COUNT;i++){const t=(i+.5)*DT;y=integrate(y,p,t>=1&&t<1+p.duration?p.amp:0);out.push(makeSample((i+1)*DT,y,p,out.at(-1)));}return out;}
+function createRun(p){return {p:{...p},y:initial(),rows:[makeSample(0,initial(),p)]};}
+function extendRun(run,target,events,isReference=false){
+ let tick=Math.round(run.rows.at(-1).t/DT);
+ while(tick*DT<target-1e-9){const midpoint=(tick+.5)*DT;const stimulus=events.reduce((sum,e)=>sum+(midpoint>=e.t&&midpoint<e.t+(isReference?DEFAULTS.duration:e.duration)?(isReference?DEFAULTS.amp:e.amp):0),0);
+ run.y=integrate(run.y,run.p,stimulus);tick++;run.rows.push(makeSample(tick*DT,run.y,run.p,run.rows.at(-1)));}
+ // Keep two minutes of biological history; rendering always uses only ten ms.
+ if(run.rows.length>24001)run.rows.splice(0,run.rows.length-24001);
+}
+let params={...DEFAULTS},run=createRun(DEFAULTS),refRun=createRun(DEFAULTS),data=run.rows,reference=refRun.rows,time=0,playing=true,started=true,experiment=false,speed=1,last=performance.now(),events=[];
+function ensureTime(t){extendRun(run,t,events);extendRun(refRun,t,events,true);data=run.rows;reference=refRun.rows;}
+function sample(t,rows=data){const pos=Math.min(rows.length-1,Math.max(0,(t-rows[0].t)/DT)),i=Math.floor(pos),f=pos-i,a=rows[i],b=rows[Math.min(rows.length-1,i+1)],s={};for(const k in a)s[k]=Array.isArray(a[k])?a[k].map((v,j)=>v+(b[k][j]-v)*f):a[k]+(b[k]-a[k])*f;return s;}
+function branchAt(t){const tick=Math.round(t/DT);time=tick*DT;for(const r of [run,refRun]){const state=sample(time,r.rows);r.rows=r.rows.filter(s=>s.t<=time+1e-9);r.y=[state.v,state.m,state.h,state.n,state.c];}events=events.filter(e=>e.t<time-1e-9);data=run.rows;reference=refRun.rows;}
+function newRecording(){run=createRun(params);refRun=createRun(DEFAULTS);data=run.rows;reference=refRun.rows;events=[];time=0;playing=true;last=performance.now();}
+const windowStart=()=>Math.max(0,time-8),tx=t=>60+(t-windowStart())*101,vy=v=>208-(v+100)*1.16;
+const line=(x1,y1,x2,y2,c='#536882',w=2,extra='')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}" ${extra}/>`;
+const text=(x,y,s,c='#9aadc5',size=12,anchor='middle')=>`<text x="${x}" y="${y}" fill="${c}" font-size="${size}" text-anchor="${anchor}">${s}</text>`;
+const circle=(x,y,r,c,extra='')=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" ${extra}/>`;
+function path(rows){return rows.map((s,i)=>`${i?'L':'M'}${tx(s.t).toFixed(2)},${vy(s.v).toFixed(2)}`).join(' ');}
+function drawChart(s){
+ const left=windowStart(),right=left+10;
+ let h='<defs><clipPath id="plotClip"><rect x="60" y="34" width="1010" height="174"/></clipPath></defs>';
+ for(let v=-100;v<=50;v+=50)h+=line(60,vy(v),1070,vy(v),'#26364d',1)+text(47,vy(v)+4,v,'#9aadc5',11,'end');
+ for(let t=Math.ceil(left);t<=right;t++)h+=line(tx(t),34,tx(t),208,'#1d2d43',1)+text(tx(t),227,t,'#9aadc5',11);
+ h+=text(19,19,'mV')+text(1090,227,'ms')+'<g clip-path="url(#plotClip)">';
+ for(const e of events)if(e.t+e.duration>=left&&e.t<=right)h+=`<rect x="${tx(e.t)}" y="34" width="${e.duration*101}" height="174" fill="#ffd282" opacity=".15"/>`+line(tx(e.t),34,tx(e.t),208,'#ffd282',1,'stroke-dasharray="3 4"');
+ h+=line(60,vy(-70),1070,vy(-70),'#52718a',1,'stroke-dasharray="3 6"');
+ const visible=rows=>{const start=Math.max(0,Math.floor((left-rows[0].t)/DT)),end=Math.max(0,Math.floor((time-rows[0].t)/DT));return [...rows.slice(start,end+1),sample(time,rows)];};
+ if(experiment&&$('compare').checked)h+=`<path d="${path(visible(reference))}" fill="none" stroke="#8b9db6" stroke-width="1.6" stroke-dasharray="5 5"/>`;
+ h+=`<path d="${path(visible(data))}" fill="none" stroke="#43ceff" stroke-width="2.5" stroke-linejoin="round"/>`+line(tx(time),34,tx(time),208,'#43ceff',1,'opacity=".5"')+circle(tx(time),vy(s.v),7,'#43ceff','opacity=".15"')+circle(tx(time),vy(s.v),3,'#d6f7ff')+'</g>';
+ $('chart').innerHTML=h;
+}
+function ion(x,y,label,color,r=7){return circle(x,y,r,color,'opacity=".9"')+text(x,y+3,label,'#071423',r===7?8:10);}
+function drawMembrane(s){let h=text(18,27,'EXTRACELLULARE','#9aadc5',11,'start')+text(18,263,'INTRACELLULARE','#9aadc5',11,'start');h+='<rect x="8" y="111" width="604" height="62" rx="10" fill="#1c3446"/>';for(let x=16;x<610;x+=14){h+=line(x-3,120,x-5,140,'#53696e',2)+line(x+3,120,x+5,140,'#53696e',2)+line(x-3,165,x-5,146,'#53696e',2)+line(x+3,165,x+5,146,'#53696e',2)+circle(x,115,5,'#87a6aa')+circle(x,169,5,'#87a6aa');}
+for(let j=0;j<15;j++){const x=22+j*40;h+=ion(x,48+(j%3)*17,'+',j%4===0?'#b49aff':'#43ceff');h+=ion(x,232+(j%2)*10,'+',j%4===0?'#43ceff':'#b49aff');}
+const visual=activity(s,params);
+const channels=[{x:105,color:'#43ceff',label:'Na⁺',i:s.ina,index:0}, {x:260,color:'#b49aff',label:'K⁺',i:s.ik,index:1}, {x:410,color:'#69e3ad',label:'Ca²⁺',i:s.ica,index:2}];
+for(const ch of channels){
+ const v=visual[ch.index],gap=v.conducting?12+v.opening*18:0;
+ const state=v.conducting?'Aperto':ch.index===0&&s.h<.2?'Inattivato':'Quasi chiuso';
+ h+=`<g data-channel="${ch.index}" data-conducting="${v.conducting}"><rect x="${ch.x-34}" y="93" width="68" height="100" rx="16" fill="#0a1625"/>`;
+ for(const dir of [-1,1])h+=`<rect x="${ch.x+dir*(gap/2+9)-9}" y="99" width="18" height="86" rx="8" fill="${ch.color}" opacity="${.45+.55*v.opening}"/>`;
+ h+=text(ch.x,86,ch.label,ch.color,14)+text(ch.x,207,state,ch.color,10)+text(ch.x,222,fmt(v.fraction*100,1)+'% conduttivi',ch.color,9);
+ if(!v.conducting)h+=line(ch.x-12,142,ch.x+12,142,ch.index===0&&s.h<.2?'#ffd282':ch.color,5);
+ if(v.conducting&&Math.abs(ch.i)>.08){
+  const count=Math.min(5,1+Math.floor(Math.log1p(Math.abs(ch.i))));
+  for(let j=0;j<count;j++){const phase=((s.motion[ch.index]+j/count)%1+1)%1;h+=`<g data-ion="${ch.index}">`+ion(ch.x,208-phase*134,'+',ch.color,4)+'</g>';}
+  const down=ch.i<0;h+=line(ch.x+38,down?114:172,ch.x+38,down?172:114,ch.color,2)+`<path d="M ${ch.x+33} ${down?165:121} L ${ch.x+38} ${down?172:114} L ${ch.x+43} ${down?165:121}" fill="none" stroke="${ch.color}" stroke-width="2"/>`;
+ }
+ h+='</g>';
+}
+h+=line(350,61,350,240,'#466077',1,'stroke-dasharray="3 4"')+text(410,249,'Terminale separato','#69e3ad',10);
+const cycle=time*.6,phase=cycle%1;h+=`<rect x="517" y="98" width="64" height="88" rx="22" fill="#65543b" stroke="#ffd282" stroke-width="2"/>`+text(549,137,'Na/K','#ffd282',13)+text(549,156,'ATPasi','#ffd282',10)+text(549,87,'POMPA','#ffd282',11)+text(549,248,phase<.5?'ATP → ADP + Pi':'3 Na⁺ ↑  2 K⁺ ↓','#ffd282',10);for(let j=0;j<3;j++)h+=ion(532+j*16,phase<.5?200-phase*240:80,'+','#43ceff',5);for(let j=0;j<2;j++)h+=ion(542+j*16,phase>=.5?80+(phase-.5)*240:200,'+','#b49aff',5);$('membrane').innerHTML=h;}
+function drawCircuit(s){const visual=activity(s,params);let h=line(50,45,520,45)+line(50,239,520,239)+text(15,49,'Int.','#9aadc5',10,'start')+text(15,243,'Est.','#9aadc5',10,'start');h+=line(85,45,85,128)+line(64,128,106,128,'#ffd282',4)+line(64,145,106,145,'#ffd282',4)+line(85,145,85,239)+text(85,82,'MEMBRANA','#ffd282',10)+text(85,106,fmt(s.v,1)+' mV','#ffd282',16);const q=Math.min(6,Math.ceil(Math.abs(s.v)/15));for(let j=0;j<q;j++){const x=60+j*10;h+=text(x,123,s.v<0?'−':'+','#ffd282',10)+text(x,160,s.v<0?'+':'−','#ffd282',10);}h+=text(85,193,fmt(s.v,1)+' nC/cm²','#ffd282',11);
+for(const b of [{x:218,c:'#43ceff',name:'Na⁺',g:s.gna,i:s.ina,e:ENA,index:0},{x:347,c:'#b49aff',name:'K⁺',g:s.gk,i:s.ik,e:EK,index:1},{x:476,c:'#9aadc5',name:'Perdita',g:.3,i:s.il,e:EL,index:3}]){const conducting=b.index===3||visual[b.index].conducting;const strength=b.index===3?.3:visual[b.index].opening;h+=line(b.x,45,b.x,90,b.c,2+strength*2)+line(b.x,133,b.x,167,b.c,2)+line(b.x,201,b.x,239,b.c,2)+`<rect x="${b.x-12}" y="90" width="24" height="43" rx="3" fill="${b.c}" fill-opacity="${.1+strength*.6}" stroke="${b.c}"/>`;if(b.name!=='Perdita')h+=line(b.x-20,142,b.x+20,83,b.c,1.5)+`<path d="M ${b.x+12} 87 L ${b.x+20} 83 L ${b.x+20} 92" fill="none" stroke="${b.c}"/>`;h+=circle(b.x,184,17,'#101c2e',`stroke="${b.c}"`)+text(b.x,181,b.e>0?'+':'−',b.c,12)+text(b.x,195,b.e>0?'−':'+',b.c,12)+text(b.x+23,189,b.e+' mV',b.c,10,'start')+text(b.x,28,b.name,b.c,13)+text(b.x,260,fmt(b.g)+' mS/cm²',b.c,11);if(conducting&&Math.abs(b.i)>.08){const phase=((s.motion[b.index]%1)+1)%1,y=52+phase*175;h+=circle(b.x,y,4,b.c);const yy=b.i>0?72:62;h+=`<path d="M ${b.x-5} ${b.i>0?yy-7:yy+7} L ${b.x} ${yy} L ${b.x+5} ${b.i>0?yy-7:yy+7}" fill="none" stroke="${b.c}" stroke-width="2"/>`;}}
+$('circuit').innerHTML=h;}
+function render(){
+ const s=sample(time);for(const id of ['chart','membrane','circuit'])$(id).dataset.time=time.toFixed(6);
+ $('timeline').min=data[0].t;$('timeline').max=data.at(-1).t;$('timeline').value=time;
+ $('historyStart').textContent=fmt(data[0].t,1)+' ms';$('historyEnd').textContent=fmt(data.at(-1).t,1)+' ms';
+ $('timeValue').textContent=fmt(time);$('voltageValue').textContent=fmt(s.v,1);$('gnaValue').textContent=fmt(s.gna);$('gkValue').textContent=fmt(s.gk);
+ $('pause').textContent=playing?'Pausa':'Riprendi';$('pause').disabled=false;$('step').disabled=playing;
+ const active=events.some(e=>time>=e.t&&time<e.t+e.duration);
+ $('generate').disabled=active;
+ $('stimulusInfo').textContent=active?'Stimolo applicato':events.length?'Ultimo stimolo: '+fmt(events.at(-1).t)+' ms':'Stimolo su comando';
+ $('status').textContent=(playing?'Tempo continuo':'In pausa')+' · '+(active?'corrente applicata': 'premi Genera impulso al momento desiderato')+' · riavvolgi con la barra temporale';
+ $('refLegend').hidden=!(experiment&&$('compare').checked);drawChart(s);drawMembrane(s);drawCircuit(s);
+}
+function updateParams(){for(const key of Object.keys(params)){params[key]=Number($(key).value);$(key+'Out').textContent=fmt(params[key],key==='duration'?1:0)+(key==='duration'?' ms':key==='amp'?' µA/cm²':' mS/cm²');}newRecording();render();}
+$('generate').onclick=()=>{branchAt(Math.floor((time+1e-9)/DT)*DT);events.push({t:time,amp:params.amp,duration:params.duration});last=performance.now();render();};
+$('pause').onclick=()=>{playing=!playing;last=performance.now();render();};
+$('step').onclick=()=>{time=Math.round((time+.1)*1e9)/1e9;ensureTime(time);render();};
+$('reset').onclick=()=>{newRecording();render();};
+$('timeline').oninput=()=>{time=Number($('timeline').value);playing=false;render();};
+$('speed').oninput=()=>{speed=[.1,.25,.5,1,2][Number($('speed').value)];$('speedOut').textContent=String(speed).replace('.',',')+'×';};for(const key of Object.keys(params))$(key).oninput=updateParams;
+function setMode(on){experiment=on;$('experiment').hidden=!on;for(const [id,active] of [['observe',!on],['experimentTab',on]]){$(id).classList.toggle('active',active);$(id).setAttribute('aria-pressed',active);}if(!on){for(const key in DEFAULTS)$(key).value=DEFAULTS[key];}updateParams();}
+$('observe').onclick=()=>setMode(false);$('experimentTab').onclick=()=>setMode(true);$('compare').onchange=render;$('defaults').onclick=()=>{for(const key in DEFAULTS)$(key).value=DEFAULTS[key];updateParams();};
+function frame(now){if(playing){time+=Math.min((now-last)/1000,.1)*speed;ensureTime(time);render();}last=now;requestAnimationFrame(frame);}updateParams();requestAnimationFrame(frame);
+</script></body></html>
